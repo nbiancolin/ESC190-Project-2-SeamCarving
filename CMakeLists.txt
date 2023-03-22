@@ -7,4 +7,4 @@ include_directories(.)
 
 add_executable(ESC190_Project_2_SeamCarving
         seamcarving.c
-        seamcarving.h)
+        seamcarving.h c_img.c)

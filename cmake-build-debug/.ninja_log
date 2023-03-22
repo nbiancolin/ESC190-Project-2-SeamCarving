@@ -1,0 +1,9 @@
+# ninja log v5
+0	238	7012250547635126	CMakeFiles/ESC190_Project_2_SeamCarving.dir/seamcarving.c.obj	144adf342d371183
+19	243	7012250547685682	CMakeFiles/ESC190_Project_2_SeamCarving.dir/c_img.c.obj	40ccc475573811a5
+3	164	7012250852019760	CMakeFiles/ESC190_Project_2_SeamCarving.dir/seamcarving.c.obj	144adf342d371183
+165	375	7012250854014953	ESC190_Project_2_SeamCarving.exe	3cfa11287663bcff
+3	139	7012253772771009	CMakeFiles/ESC190_Project_2_SeamCarving.dir/seamcarving.c.obj	144adf342d371183
+140	341	7012253774707017	ESC190_Project_2_SeamCarving.exe	3cfa11287663bcff
+2	134	7012253991987534	CMakeFiles/ESC190_Project_2_SeamCarving.dir/seamcarving.c.obj	144adf342d371183
+136	313	7012253993705062	ESC190_Project_2_SeamCarving.exe	3cfa11287663bcff
