@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "ESC190_Project_2_SeamCarving",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ESC190_Project_2_SeamCarving::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ESC190_Project_2_SeamCarving-Debug-eda24762945b4eb0811a.json",
+					"name" : "ESC190_Project_2_SeamCarving",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Nicholas/Documents/GitHub/ESC190-Project-2-SeamCarving/cmake-build-debug",
+		"source" : "C:/Users/Nicholas/Documents/GitHub/ESC190-Project-2-SeamCarving"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
