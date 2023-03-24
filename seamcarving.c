@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "c_img.h"
+#include <limits.h>
 
 
 
@@ -21,60 +22,52 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
              * 1st is Green
              * 2nd is Blue
              */
+            int pix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
-             int pix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
-                 for (int k = 0; k < 3; k++) {
-                     pix[k] = get_pixel(im, i, j, k);
-                     pixUp[k] = get_pixel(im, i - 1, j, k);
-                     pixDown[k] = get_pixel(im, i + 1, j, k);
-                     pixLeft[k] = get_pixel(im, i, j - 1, k);
-                     pixRight[k] = get_pixel(im, i, j + 1, k);
-                 }
+            if(i == 0){ //Maybe there's a better way to do this, maybe not. suck my dick (not you Hassan you're the best)
+                for (int k = 0; k < 3; k++) {
+                    pix[k] = get_pixel(im, i, j, k);
+                    pixUp[k] = get_pixel(im, height-1, j, k);
+                    pixDown[k] = get_pixel(im, i + 1, j, k);
+                    pixLeft[k] = get_pixel(im, i, j - 1, k);
+                    pixRight[k] = get_pixel(im, i, j + 1, k);
+                }
+            } else if(j == 0){
+                for (int k = 0; k < 3; k++) {
+                    pix[k] = get_pixel(im, i, j, k);
+                    pixUp[k] = get_pixel(im, i - 1, j, k);
+                    pixDown[k] = get_pixel(im, i + 1, j, k);
+                    pixLeft[k] = get_pixel(im, i, width-1, k);
+                    pixRight[k] = get_pixel(im, i, j + 1, k);
+                }
+            } else if(i == width){
+                for (int k = 0; k < 3; k++) {
+                    pix[k] = get_pixel(im, i, j, k);
+                    pixUp[k] = get_pixel(im, i - 1, j, k);
+                    pixDown[k] = get_pixel(im, 0, j, k);
+                    pixLeft[k] = get_pixel(im, i, j - 1, k);
+                    pixRight[k] = get_pixel(im, i, j + 1, k);
+                }
+            } else if(j == height){
+                for (int k = 0; k < 3; k++) {
+                    pix[k] = get_pixel(im, i, j, k);
+                    pixUp[k] = get_pixel(im, i - 1, j, k);
+                    pixDown[k] = get_pixel(im, i + 1, j, k);
+                    pixLeft[k] = get_pixel(im, i, j - 1, k);
+                    pixRight[k] = get_pixel(im, i, 0, k);
+                }
+            }
+            else {
+                for (int k = 0; k < 3; k++) {
+                    pix[k] = get_pixel(im, i, j, k);
+                    pixUp[k] = get_pixel(im, i - 1, j, k);
+                    pixDown[k] = get_pixel(im, i + 1, j, k);
+                    pixLeft[k] = get_pixel(im, i, j - 1, k);
+                    pixRight[k] = get_pixel(im, i, j + 1, k);
+                }
+            }
 
-
-
-            /*
-            int Rs[5], Gs[5], Bs[5];
-
-
-             * Layout of colour Arrays
-             * 0 - Current Pixel
-             * 1 - Pixel Above
-             * 2 - Pixel Below
-             * 3 - Pixel To the Left
-             * 4 - Pixel to the Right
-
-            Rs[0] = get_pixel(im, i,j,0); //Not totally sure it's important
-            Rs[1] = get_pixel(im, i-1, j, 0);
-            Rs[2] = get_pixel(im, i+1, j, 0);
-            Rs[3] = get_pixel(im, i, j-1, 0);
-            Rs[4] = get_pixel(im, i, j+1, 0);
-
-            Gs[0] = get_pixel(im, i,j,0); //Not totally sure it's important
-            Gs[1] = get_pixel(im, i-1, j, 1);
-            Gs[2] = get_pixel(im, i+1, j, 1);
-            Gs[3] = get_pixel(im, i, j-1, 1);
-            Gs[4] = get_pixel(im, i, j+1, 1);
-
-            Bs[0] = get_pixel(im, i,j,2); //Not totally sure it's important
-            Bs[1] = get_pixel(im, i-1, j, 2);
-            Bs[2] = get_pixel(im, i+1, j, 2);
-            Bs[3] = get_pixel(im, i, j-1, 2);
-            Bs[4] = get_pixel(im, i, j+1, 2);
-            */
-
-            //calculate deltas
-            int Rx, Gx, Bx, Ry, Gy, By; //The difference in RGB values in the pixels above & below, and left & right
-
-            /*
-            Rx = Rs[2] - Rs[1];
-            Gx = Gs[2] - Gs[1];
-            Bx = Bs[2] - Bs[1];
-
-            Ry = Rs[4] - Rs[3];
-            Gy = Gs[4] - Gs[3];
-            By = Bs[4] - Bs[3];
-            */
+            int Rx, Gx, Bx, Ry, Gy, By;
 
             Rx = pixDown[0] - pixUp[0];
             Gx = pixDown[1] - pixUp[1];
@@ -83,35 +76,78 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
             Ry = pixRight[0] - pixLeft[0];
             Gy = pixRight[1] - pixLeft[1];
             By = pixRight[2] - pixLeft[2];
-            
+
 
             //calculate energy
             int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
             int deltaY = Ry*Ry + Gy*Gy + By*By;
-            int res = sqrt(deltaX + deltaY);
+            int energy = sqrt(deltaX + deltaY);
 
-            //*grad->//got to do something w. this
+            uint8_t res = energy/10; //Is this right?? I think so but not totally sure...
 
-            //Problem with grad... set pixel is breaking, andy said its because grad is not initialized...
             set_pixel(*grad, i, j, res, 0,0);
         }
     }
+}
+
+
+void dynamic_seam(struct rgb_img *grad, double **best_arr){
+
+    int width = grad->width;
+    int height = grad->height;
+    double count = 0;
+
+    int len = 0;
+    len = sizeof(double *) * height + sizeof(double) * width * height;
+    best_arr = (double **)malloc(len); //Array is Malloc'ed
+
+    double *ptr = (double *)(best_arr + height);
+
+    /*
+     //Test code to add dummy variables to best arr array
+    for(int i = 0; i < height; i++){
+        best_arr[i] = (ptr + width * i);
+        for(int j = 0; j < width; j++){
+            best_arr[i][j] = ++count;
+        }
+    }
+
+     //test code to print best arr array
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            printf("%f ", best_arr[i][j]);
+        }
+        printf("\n");
+    }
+
+
+
+    /*
+    double tc[width][height]; //Miight have to switch height and width, idk
+    *tc = malloc(sizeof(double) * (width * height));
+    *best_arr = &tc;
+    tc[0][0] = get_pixel(grad, 0,0,0); //all data in grad is stored in the red or 0 col
+
+    *best_arr = &tc;
+    */
 }
 
 int main() {
     printf("Hello, World!");
 
     struct rgb_img *im;
-    create_img(&im, 3, 4); // do these values need to be hardcoded?
+    create_img(&im, 4, 3); // do these values need to be hardcoded?
 
     struct rgb_img *grad;
 
     create_img(&grad, 3, 4);
 
     calc_energy(im,  &grad);
-    printf("tempy");
+    printf("tempy\n");
 
     print_grad(grad);
+    double** temp;
+    dynamic_seam(grad, temp);
 
 
 
