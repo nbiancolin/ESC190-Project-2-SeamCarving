@@ -4,8 +4,19 @@
 #include "c_img.h"
 #include <limits.h>
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y)) //Don't really need this but I figured I'd write it anyways
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+//Somehow there are no default min or max functions, so, we writing our own boys.
 
 
+int min_compare_three(double a, double b, double c){
+    if(a <= b){
+        if(a <= c) return 1;
+        return 3;
+    }
+    if( b <= c) return 2;
+    return 3;
+}
 
 void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
@@ -90,8 +101,25 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
     }
 }
 
-
 void dynamic_seam(struct rgb_img *grad, double **best_arr){
+    int width = grad->width;
+    int height = grad->height;
+
+    best_arr = (double **)malloc(sizeof(double) * (width * height));
+
+    for(int i = width; i < width; i++){
+        best_arr[i*width] = MIN(best_arr[(i-1)*width], best_arr[(i-1)*width+1]) + get_pixel(grad, i,0,0);
+        for(int j = 1; j < height-1; j++){
+            best_arr[i*width + j] = MIN(best_arr[(i-1)*width + j], MIN(best_arr[(i-1)*width + j - 1], best_arr[(i-1)*width + j +1])) + get_pixel(grad, i,j,0);
+        }
+        best_arr[i*width + width - 1] = MIN(best_arr[(i-1)*width + width], best_arr[(i-1)*width + width - 1]) + get_pixel(grad, i, width, 0);
+    }
+}
+
+
+
+void old_dynamic_seam(struct rgb_img *grad, double **best_arr){
+    //Made using a 2d array, and apparently the project says we shouldn't do that:/. Once i get this method working maybe I'll revamp it to use the 2d array
 
     int width = grad->width;
     int height = grad->height;
@@ -103,7 +131,7 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
 
     double *ptr = (double *)(best_arr + height);
 
-    /*
+
      //Test code to add dummy variables to best arr array
     for(int i = 0; i < height; i++){
         best_arr[i] = (ptr + width * i);
@@ -112,24 +140,90 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
         }
     }
 
-     //test code to print best arr array
+
+    //for any given pixel
+    //Compare the three directly above the pixel (wrap around?), find the lowest and add it to score.
+
+    for(int j = 0; j < width; j++){
+        best_arr[0][j] = get_pixel(grad, 0,j,0);
+    }
+    for(int i = 1; i < height; i++){
+        best_arr[i][0] = MIN(best_arr[i-1][0], best_arr[i-1][1]) + get_pixel(grad, i, 0, 0);
+        best_arr[i][width] = MIN(best_arr[i-1][width], best_arr[i-1][width-1]) + get_pixel(grad, i,0,0);
+    }
+    for(int i = 1; i < height; i++){
+        for(int j = 1; j < width-1; j++){
+            best_arr[i][j] = MIN(best_arr[i-1][j], MIN(best_arr[i-1][j-1], best_arr[i-1][j+1])) + get_pixel(grad, i,j,0);
+        }
+    }
+
+    /*
+    //test code to print best arr array
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             printf("%f ", best_arr[i][j]);
         }
         printf("\n");
+    } */
+
+}
+
+void recover_path(double *best, int height, int width, int **path){
+    *path = malloc(sizeof(int) * height);
+    double temp = 256;
+    int temp_width = 0;
+    for(int i = 0; i < width; i++){
+        if(best[i] < temp) {
+            temp_width = i;
+            temp = best[i];
+        }
     }
+    for(int i = 1; i < height; i++){
+        double a = best[i*width + temp_width + 1];
+        double b = best[i*width + temp_width];
+        double c = best[i*width + temp_width + 1];
+        int min_case = min_compare_three(a,b,c);
+        switch(min_case){
+            case 1:
+                //A is smallest
+                temp_width++;
+                break;
+            case 2:
+                //B is smallest
+                break;
+            case 3:
+                //C is smallest
+                temp_width--;
+                break;
+            default:
+                printf("Something is broken here... idk how this happened...");
+        }
+        *path[i] = temp_width;
+    }
+}
+
+
+void old_recover_path(double *best, int height, int width, int **path){
+    *path = malloc(sizeof(int) * height);
+    double temp = 256;
+    int temp_index = 0;
+    for(int i = 0; i < width; i++){
+        if(best[i][0] < temp){
+            temp_index = i;
+            temp == best[i][0];
+        }
+    }
+    *path[0] = (int)temp;
+    for(int i = 1; i < height; i++){
 
 
 
-    /*
-    double tc[width][height]; //Miight have to switch height and width, idk
-    *tc = malloc(sizeof(double) * (width * height));
-    *best_arr = &tc;
-    tc[0][0] = get_pixel(grad, 0,0,0); //all data in grad is stored in the red or 0 col
 
-    *best_arr = &tc;
-    */
+
+
+    }
+    //gist of it is: find the min of first row, that is the starting point.
+    //then, for all next rows, compare next row pixel (left, center, right), min gets added to path.
 }
 
 int main() {
