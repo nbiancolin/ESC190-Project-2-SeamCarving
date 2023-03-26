@@ -208,9 +208,9 @@ void old_recover_path(double *best, int height, int width, int **path){
     double temp = 256;
     int temp_index = 0;
     for(int i = 0; i < width; i++){
-        if(best[i][0] < temp){
+        if(best[i] < temp){
             temp_index = i;
-            temp == best[i][0];
+            temp == best[i];
         }
     }
     *path[0] = (int)temp;
@@ -225,6 +225,26 @@ void old_recover_path(double *best, int height, int width, int **path){
     //gist of it is: find the min of first row, that is the starting point.
     //then, for all next rows, compare next row pixel (left, center, right), min gets added to path.
 }
+
+void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
+    //create and malloc dest image (same dimensions as source)
+    //Go through path and set that pixel in dest
+    int width = src->width;
+    int height = src->height;
+
+    create_img(dest, height, width);
+
+
+    for(int i = 0; i < width; i++){
+        for(int j = 0; j < height; j++){
+            //Do something here
+        }
+    }
+
+
+}
+
+
 
 int main() {
     printf("Hello, World!");
@@ -242,6 +262,13 @@ int main() {
     print_grad(grad);
     double** temp;
     dynamic_seam(grad, temp);
+    printf("tempy\n");
+    printf("%f",**temp);
+
+    int** path;
+
+    //recover_path(*temp, 3, 4, path);
+
 
 
 
