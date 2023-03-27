@@ -18,6 +18,18 @@ int min_compare_three(double a, double b, double c){
     return 3;
 }
 
+double min(double a, double b){
+    if(a <= b){
+        return a;
+    }
+    return b;
+}
+
+double min_three(double a, double b, double c){
+    double d = min(a, b);
+    return min(c, d);
+}
+
 void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
     read_in_img(&im, "../3x4.bin");
@@ -105,15 +117,31 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
     int width = grad->width;
     int height = grad->height;
 
-    best_arr = (double **)malloc(sizeof(double) * (width * height));
+    *best_arr = (double *)malloc(sizeof(double) * (width * height));
 
-    for(int i = width; i < width; i++){
-        best_arr[i*width] = MIN(best_arr[(i-1)*width], best_arr[(i-1)*width+1]) + get_pixel(grad, i,0,0);
-        for(int j = 1; j < height-1; j++){
-            best_arr[i*width + j] = MIN(best_arr[(i-1)*width + j], MIN(best_arr[(i-1)*width + j - 1], best_arr[(i-1)*width + j +1])) + get_pixel(grad, i,j,0);
-        }
-        best_arr[i*width + width - 1] = MIN(best_arr[(i-1)*width + width], best_arr[(i-1)*width + width - 1]) + get_pixel(grad, i, width, 0);
+    for(int i = 0; i < width * height; i++){
+        *best_arr[i] = 0.0;
     }
+    int *temp = malloc(sizeof(int));
+
+    for(int i = 1; i < width; i++){
+        *temp = get_pixel(grad, i, 0, 0);
+        *best_arr[i*width] = *MIN(best_arr[(i-1)*width], best_arr[(i-1)*width+1]) + *temp;
+        for(int j = 1; j < height-1; j++){
+            *temp = get_pixel(grad, i,j,0);
+            *best_arr[i*width + j] = *MIN(best_arr[(i-1)*width + j], MIN(best_arr[(i-1)*width + j - 1], best_arr[(i-1)*width + j +1])) + *temp;
+        }
+        *temp = get_pixel(grad, i, width, 0);
+        *best_arr[i*width + width - 1] = *MIN(best_arr[(i-1)*width + width], best_arr[(i-1)*width + width - 1]);
+    }
+
+    for(int i = 0; i < width; i++){
+        for(int j = 0; j < height; j++){
+            printf("%f",*best_arr[i*width + j]);
+        }
+        printf("\n");
+    }
+    //free the "temp" variable
 }
 
 
@@ -247,10 +275,11 @@ void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
 
 
 int main() {
+
     printf("Hello, World!");
 
     struct rgb_img *im;
-    create_img(&im, 4, 3); // do these values need to be hardcoded?
+    create_img(&im, 3, 4); // do these values need to be hardcoded?
 
     struct rgb_img *grad;
 
@@ -260,12 +289,15 @@ int main() {
     printf("tempy\n");
 
     print_grad(grad);
-    double** temp;
-    dynamic_seam(grad, temp);
-    printf("tempy\n");
-    printf("%f",**temp);
 
-    int** path;
+
+
+    //double** temp;
+    //dynamic_seam(grad, temp);
+    //printf("tempy\n");
+    //printf("%f",**temp);
+
+    //int** path;
 
     //recover_path(*temp, 3, 4, path);
 
