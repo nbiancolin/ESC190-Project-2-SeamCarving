@@ -201,7 +201,8 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
 
     double left, centre, right;
     for(int i = 1; i < height; i++){
-        //2nd and every row after, compare the 3 elements above it, and add the lowest one to the new arr.4
+        //2nd and every row after, compare the 3 elements above it, and add the lowest one to the new arr.
+        //edge cases for pixels on the left and right edge
         for(int j = 0; j < width; j++){
             left = *best_arr[(i-1)*width + j -1];
             centre = *best_arr[(i-1)*width + j];
@@ -449,29 +450,25 @@ void old_recover_path(double *best, int height, int width, int **path){
    //gist of it is: find the min of first row, that is the starting point.
    //then, for all next rows, compare next row pixel (left, center, right), min gets added to path.
 }
+ */
 
 int main() {
    printf("Hello, World!");
 
    struct rgb_img *im;
-   create_img(&im, 4, 3); // do these values need to be hardcoded?
 
    struct rgb_img *grad;
-
-   create_img(&grad, 3, 4);
+   create_img(&grad, 4, 3);
 
    calc_energy(im,  &grad);
+   //print_grad(im);
    printf("tempy\n");
 
    print_grad(grad);
    double** temp;
-   dynamic_seam(grad, temp);
-
-
-
+   //dynamic_seam(grad, temp);
 
 }
-
 //
 // Created by Nicholas on 2023-03-22.
 //
