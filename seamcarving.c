@@ -189,7 +189,9 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
 
 
-
+void dynamic_seam(struct rgb_img *grad, double **best_arr){
+    
+}
 
 
 
