@@ -190,7 +190,39 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
 
 void dynamic_seam(struct rgb_img *grad, double **best_arr){
-    
+    int width = grad->width;
+    int height = grad->height;
+
+    best_arr = (double **)malloc(sizeof(double) * (width * height));
+
+    for(int j = 0; j < width; j++){
+        *best_arr[j] = get_pixel(grad, 0, j, 0);
+    }
+
+    double left, centre, right;
+    for(int i = 1; i < height; i++){
+        //2nd and every row after, compare the 3 elements above it, and add the lowest one to the new arr.4
+        for(int j = 0; j < width; j++){
+            left = *best_arr[(i-1)*width + j -1];
+            centre = *best_arr[(i-1)*width + j];
+            right = *best_arr[(i-1)*width + j];
+            *best_arr[i*width + j] = MIN(left, MIN(centre, right)) + get_pixel(grad, i,j,0);
+        }
+
+
+    }
+
+
+    for(int i = width; i < width; i++){
+        best_arr[i*width] = MIN(best_arr[(i-1)*width], best_arr[(i-1)*width+1]) + get_pixel(grad, i,0,0);
+
+        for(int j = 1; j < height-1; j++){
+            best_arr[i*width + j] = MIN(best_arr[(i-1)*width + j], MIN(best_arr[(i-1)*width + j - 1], best_arr[(i-1)*width + j +1])) + get_pixel(grad, i,j,0);
+        }
+
+        best_arr[i*width + width - 1] = MIN(best_arr[(i-1)*width + width], best_arr[(i-1)*width + width - 1]) + get_pixel(grad, i, width, 0);
+    }
+
 }
 
 
