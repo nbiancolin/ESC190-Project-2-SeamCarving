@@ -20,6 +20,7 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
     //then main loop from 1 to len-1
 
     for(int i = 0; i < height; i++){ //This is for the entire row j = 0
+        printf("i: %d j: %d", i,0);
         int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
         for(int k = 0; k <3; k++) {
@@ -51,6 +52,7 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
     }
 
     for(int i = 0; i < height; i++){ //j = width
+        printf("i: %d j: %d", i,width);
         int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
         for(int k = 0; k <3; k++) {
@@ -107,7 +109,7 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
         uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
 
-        set_pixel(*grad, 0, j, res, 0,0);
+        set_pixel(*grad, 0, j, energy, 0,0);
 
 
     }
