@@ -9,6 +9,43 @@
 //Somehow there are no default min or max functions, so, we writing our own boys.
 
 
+
+
+int calc_energy_pixel(struct rgb_img *im, int y, int x){ // just to test if the underlying ideas are correct
+    read_in_img(&im, "../3x4.bin");
+
+    int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
+
+    for(int k = 0; k < 3; k++){
+        curPix[k] = get_pixel(im, y, x, k);
+        pixUp[k] = get_pixel(im, y - 1, x, k);
+        pixDown[k] = get_pixel(im, y + 1, x, k);
+        pixLeft[k] = get_pixel(im, y, x - 1, k);
+        pixRight[k] = get_pixel(im, y, x + 1, k);
+    }
+
+    int Rx, Gx, Bx, Ry, Gy, By;
+
+    Rx = pixDown[0] - pixUp[0];
+    Gx = pixDown[1] - pixUp[1];
+    Bx = pixDown[2] - pixUp[2];
+
+    Ry = pixRight[0] - pixLeft[0];
+    Gy = pixRight[1] - pixLeft[1];
+    By = pixRight[2] - pixLeft[2];
+
+    //calculate energy
+    int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
+    int deltaY = Ry*Ry + Gy*Gy + By*By;
+    int energy = sqrt(deltaX + deltaY);
+
+    uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
+
+    return res;
+
+}
+
+
 void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
 
@@ -16,11 +53,21 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
     int width = im->width;
     int height = im->height;
 
+    printf("Width: %d\n", width);
+    printf("Height: %d\n", height);
+
+    width--; //Maybe its messing up because the right row is out of bounds?
+    height--;
+
+    printf("Width: %d\n", width);
+    printf("Height: %d\n", height);
+
     //do edge cases first
     //then main loop from 1 to len-1
 
-    for(int i = 0; i < height; i++){ //This is for the entire row j = 0
-        printf("i: %d j: %d", i,0);
+    for(int i = 0; i <= height; i++){ //This is for the entire row j = 0
+        //printf("i: %d j: %d \n", i,0);
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", i, 0);
         int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
         for(int k = 0; k <3; k++) {
@@ -32,13 +79,13 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
         }
         int Rx, Gx, Bx, Ry, Gy, By;
 
-        Rx = pixDown[0] - pixUp[0];
-        Gx = pixDown[1] - pixUp[1];
-        Bx = pixDown[2] - pixUp[2];
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
 
-        Ry = pixRight[0] - pixLeft[0];
-        Gy = pixRight[1] - pixLeft[1];
-        By = pixRight[2] - pixLeft[2];
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
 
         //calculate energy
         int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
@@ -47,12 +94,12 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
         uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
 
-        set_pixel(*grad, i, 0, res, 0,0);
+        set_pixel(*grad, i, 0, res, res,res);
 
     }
 
-    for(int i = 0; i < height; i++){ //j = width
-        printf("i: %d j: %d", i,width);
+    for(int i = 0; i <= height; i++){ //j = width
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", i, width);
         int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
         for(int k = 0; k <3; k++) {
@@ -64,13 +111,13 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
         }
         int Rx, Gx, Bx, Ry, Gy, By;
 
-        Rx = pixDown[0] - pixUp[0];
-        Gx = pixDown[1] - pixUp[1];
-        Bx = pixDown[2] - pixUp[2];
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
 
-        Ry = pixRight[0] - pixLeft[0];
-        Gy = pixRight[1] - pixLeft[1];
-        By = pixRight[2] - pixLeft[2];
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
 
         //calculate energy
         int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
@@ -79,10 +126,11 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
         uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
 
-        set_pixel(*grad, i, width, res, 0,0);
+        set_pixel(*grad, i, width-1, res, res,res);
     }
 
-    for(int j = 0; j < width; j++){ //i == 0
+    for(int j = 0; j <= width; j++){ //i == 0
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", 0, j);
         int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
         for(int k = 0; k <3; k++) {
@@ -94,13 +142,13 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
         }
         int Rx, Gx, Bx, Ry, Gy, By;
 
-        Rx = pixDown[0] - pixUp[0];
-        Gx = pixDown[1] - pixUp[1];
-        Bx = pixDown[2] - pixUp[2];
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
 
-        Ry = pixRight[0] - pixLeft[0];
-        Gy = pixRight[1] - pixLeft[1];
-        By = pixRight[2] - pixLeft[2];
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
 
         //calculate energy
         int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
@@ -109,12 +157,13 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
         uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
 
-        set_pixel(*grad, 0, j, energy, 0,0);
+        set_pixel(*grad, 0, j, res, res,res);
 
 
     }
 
-    for(int j = 0; j < width; j++){ //i == height
+    for(int j = 0; j <= width; j++){ //i == height
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", height, j);
         int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
 
         for(int k = 0; k <3; k++) {
@@ -126,13 +175,13 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
         }
         int Rx, Gx, Bx, Ry, Gy, By;
 
-        Rx = pixDown[0] - pixUp[0];
-        Gx = pixDown[1] - pixUp[1];
-        Bx = pixDown[2] - pixUp[2];
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
 
-        Ry = pixRight[0] - pixLeft[0];
-        Gy = pixRight[1] - pixLeft[1];
-        By = pixRight[2] - pixLeft[2];
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
 
         //calculate energy
         int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
@@ -141,13 +190,14 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
         uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
 
-        set_pixel(*grad, height, j, res, 0,0);
+        set_pixel(*grad, height-1, j, res, res,res);
     }
 
 
-    for(int i = 1; i < (height-1); i++){
-        for(int j = 1; j < (width-1); j++){
-
+    for(int i = 1; i <= (height-1); i++){  //THIS SECTION FOR SURE WORKS...
+        for(int j = 1; j <= (width-1); j++){ //keep getting an error on the boundary cases, but the interior code works...
+                                            // time to find out why the rest is not working...
+            printf("Calculating Pixel (y,x):  (%d,%d)\n", i, j);
             /**
             * New method of storing RGB: By pixel lmao
             * 0th is Red
@@ -166,13 +216,13 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
            }
             int Rx, Gx, Bx, Ry, Gy, By;
 
-            Rx = pixDown[0] - pixUp[0];
-            Gx = pixDown[1] - pixUp[1];
-            Bx = pixDown[2] - pixUp[2];
+            Rx = abs(pixDown[0] - pixUp[0]);
+            Gx = abs(pixDown[1] - pixUp[1]);
+            Bx = abs(pixDown[2] - pixUp[2]);
 
-            Ry = pixRight[0] - pixLeft[0];
-            Gy = pixRight[1] - pixLeft[1];
-            By = pixRight[2] - pixLeft[2];
+            Ry = abs(pixRight[0] - pixLeft[0]);
+            Gy = abs(pixRight[1] - pixLeft[1]);
+            By = abs(pixRight[2] - pixLeft[2]);
 
             //calculate energy
             int deltaX = Rx*Rx + Gx*Gx + Bx*Bx;
@@ -181,7 +231,7 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
             uint8_t res = energy/10; //Is this right?? I think so but not totally sure... //I think this is right now
 
-            set_pixel(*grad, i, j, res, 0,0);
+            set_pixel(*grad, i, j, res, res,res);
        }
 
    }
@@ -464,7 +514,11 @@ int main() {
 
    calc_energy(im,  &grad);
    //print_grad(im);
-   printf("tempy\n");
+   //printf("tempy\n");
+
+   //int smtg = calc_energy_pixel(im, 1, 1);
+
+   //printf("Energy at 1,1: %d", smtg);
 
    print_grad(grad);
    double** temp;
