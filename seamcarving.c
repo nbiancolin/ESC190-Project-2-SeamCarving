@@ -48,6 +48,13 @@ int calc_energy_pixel(struct rgb_img *im, int y, int x){ // just to test if the 
 
 void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
+    /**
+     * New Process:
+     * 1. Do corners (check)
+     * 2. Borders
+     * 3. Remainder of image
+     */
+
 
     read_in_img(&im, "../3x4.bin");
     int width = im->width;
@@ -56,7 +63,7 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
     printf("Width: %d\n", width);
     printf("Height: %d\n", height);
 
-    width--; //Maybe its messing up because the right row is out of bounds?
+    width--; //So that I don't have to do "height -1" every time, can just use >= on loops now
     height--;
 
     printf("Width: %d\n", width);
@@ -64,6 +71,174 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 
     //do edge cases first
     //then main loop from 1 to len-1
+
+    //New fixed (?) code?
+
+    //1. corners
+    //2. borders
+    //3. Interior?
+
+
+    //1. Corners (doing them manually because Fuck C
+
+        //1.1 - Top left Corner
+
+
+    /**
+    * New method of storing RGB: By pixel lmao
+    * 0th is Red
+    * 1st is Green
+    * 2nd is Blue
+     */
+
+    int flag = 1;
+    while(flag) {
+        int curPix[3], pixUp[3], pixDown[3], pixLeft[3], pixRight[3];
+        int Rx, Gx, Bx, Ry, Gy, By;
+
+        //top left corner
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", 0, 0);
+
+        for (int k = 0; k < 3; k++) {
+            curPix[k] = get_pixel(im, 0, 0, k);
+            pixUp[k] = get_pixel(im, height, 0, k);
+            pixDown[k] = get_pixel(im, 1, 0, k);
+            pixLeft[k] = get_pixel(im, 0, width, k);
+            pixRight[k] = get_pixel(im, 0, 1, k);
+        }
+
+
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
+
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
+
+        //calculate energy
+        int deltaX = Rx * Rx + Gx * Gx + Bx * Bx;
+        int deltaY = Ry * Ry + Gy * Gy + By * By;
+        int energy = sqrt(deltaX + deltaY);
+
+        uint8_t res = energy / 10; //Is this right?? I think so but not totally sure... //I think this is right now
+
+        set_pixel(*grad, 0, 0, res, res, res);
+
+        //top right corner
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", 0, width);
+
+        for (int k = 0; k < 3; k++) {
+            curPix[k] = get_pixel(im, 0, width, k);
+            pixUp[k] = get_pixel(im, height, width, k);
+            pixDown[k] = get_pixel(im, 1, width, k);
+            pixLeft[k] = get_pixel(im, 0, width-1, k);
+            pixRight[k] = get_pixel(im, 0, 0, k);
+        }
+
+
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
+
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
+
+        //calculate energy
+        deltaX = Rx * Rx + Gx * Gx + Bx * Bx;
+        deltaY = Ry * Ry + Gy * Gy + By * By;
+        energy = sqrt(deltaX + deltaY);
+
+        res = energy / 10; //Is this right?? I think so but not totally sure... //I think this is right now
+
+        set_pixel(*grad, 0, width, res, res, res);
+
+        //bottom right corner
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", height, width);
+
+        for (int k = 0; k < 3; k++) {
+            curPix[k] = get_pixel(im, height, width, k);
+            pixUp[k] = get_pixel(im, height-1, width, k);
+            pixDown[k] = get_pixel(im, 0, width, k);
+            pixLeft[k] = get_pixel(im, height, width-1, k);
+            pixRight[k] = get_pixel(im, height, 0, k);
+        }
+
+
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
+
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
+
+        //calculate energy
+        deltaX = Rx * Rx + Gx * Gx + Bx * Bx;
+        deltaY = Ry * Ry + Gy * Gy + By * By;
+        energy = sqrt(deltaX + deltaY);
+
+        res = energy / 10; //Is this right?? I think so but not totally sure... //I think this is right now
+
+        set_pixel(*grad, height, width, res, res, res);
+
+        //bottom left corner (not done)
+        printf("Calculating Pixel (y,x):  (%d,%d)\n", height, 0);
+
+        for (int k = 0; k < 3; k++) {
+            curPix[k] = get_pixel(im, height, 0, k);
+            pixUp[k] = get_pixel(im, height-1, 0, k);
+            pixDown[k] = get_pixel(im, 0, 0, k);
+            pixLeft[k] = get_pixel(im, height, width, k);
+            pixRight[k] = get_pixel(im, height, 1, k);
+        }
+
+
+        Rx = abs(pixDown[0] - pixUp[0]);
+        Gx = abs(pixDown[1] - pixUp[1]);
+        Bx = abs(pixDown[2] - pixUp[2]);
+
+        Ry = abs(pixRight[0] - pixLeft[0]);
+        Gy = abs(pixRight[1] - pixLeft[1]);
+        By = abs(pixRight[2] - pixLeft[2]);
+
+        //calculate energy
+        deltaX = Rx * Rx + Gx * Gx + Bx * Bx;
+        deltaY = Ry * Ry + Gy * Gy + By * By;
+        energy = sqrt(deltaX + deltaY);
+
+        res = energy / 10; //Is this right?? I think so but not totally sure... //I think this is right now
+
+        set_pixel(*grad, 0, width, res, res, res);
+
+
+        flag = 0;
+    }
+
+    //part 2: edges
+
+    for(int i = 0; i <= height; i++){
+        for(int j = 0; j <= width; j++){
+
+            //Dont want code to run when pairs
+
+            if(i == 0 || i == width){
+                if(j == 0 || j == width){
+                    //don't do anything
+                    continue; //idk it says this will work? Guess we'll see
+                }
+            }
+
+            //compare borders
+
+        }
+    }
+
+
+
+
+    /*
 
     for(int i = 0; i <= height; i++){ //This is for the entire row j = 0
         //printf("i: %d j: %d \n", i,0);
@@ -193,6 +368,7 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
         set_pixel(*grad, height-1, j, res, res,res);
     }
 
+    */
 
     for(int i = 1; i <= (height-1); i++){  //THIS SECTION FOR SURE WORKS...
         for(int j = 1; j <= (width-1); j++){ //keep getting an error on the boundary cases, but the interior code works...
