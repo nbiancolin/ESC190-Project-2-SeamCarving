@@ -220,20 +220,15 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
 void dynamic_seam(struct rgb_img *grad, double **best_arr){
     int width = grad->width;
     int height = grad->height;
-    printf("Width and Height calculated\n");
+
+    printf("Width: %d Height: %d \n", width, height);
 
     *best_arr = (double *)malloc(sizeof(double) * (width * height));
 
-    printf("Malloc'd\n");
-
-    double count= 0; //code to assign dummy variables (can be removed (probably))
-    for(int i = 0; i < width * height; i++){
-        (*best_arr)[i] = ++count;
-    }
-
-    printf("Temp Malloc'd\n");
-
-
+    //double count= 0; //code to assign dummy variables (can be removed (probably))
+    //for(int i = 0; i < width * height; i++){
+    //    (*best_arr)[i] = ++count;
+    //}
 
     //New Code
 
@@ -253,18 +248,18 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
     for(int y = 1; y < height; y++){
         x=0;
         index = y*width + x;
-        indexAbove = y*(width-1) + x;
+        indexAbove = y*(width) -width + x;
         temp = get_pixel(grad, y,x,0);
-        (*best_arr)[index] = MIN((*best_arr)[indexAbove], (*best_arr)[indexAbove +1]) +temp; 
-        for(x = 1; x < width; x++){
+        (*best_arr)[index] = MIN((*best_arr)[indexAbove], (*best_arr)[indexAbove +1]) +temp;
+        for(x = 1; x < (width-1); x++){
             //middle cols
             index = y*width + x;
-            indexAbove = y*(width-1) + x;
+            indexAbove = y*(width) -width + x;
             temp = get_pixel(grad, y,x,0);
             (*best_arr)[index] = MIN((*best_arr)[indexAbove], MIN((*best_arr)[indexAbove -1], (*best_arr)[indexAbove +1])) + temp;
         }
         index = y*width + x;
-        indexAbove = y*(width-1) + x;
+        indexAbove = y*(width) -width + x;
         temp = get_pixel(grad, y,x,0);
         (*best_arr)[index] = MIN((*best_arr)[indexAbove], (*best_arr)[indexAbove -1]) + temp;
     }
@@ -290,14 +285,20 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
 
     //test code to print best arr
 
-    for(int i = 0; i < width; i++){
+    for(int y = 0; y < height; y++){
+        for(int j = 0; j < width; j++){
+            printf("%f ", (*best_arr)[y*width+j]);
+        }
+        printf("\n");
+    }
+
+    /*
+    for(int i = 0; i < height; i++){
         for(int j = 0; j < height; j++){
             printf("%f ",(*best_arr)[i*width + j]);
         }
         printf("\n");
-    }
-    free(temp);
-    //free temp2?
+    } */
 }
 
 
