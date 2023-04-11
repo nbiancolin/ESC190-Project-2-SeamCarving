@@ -264,7 +264,7 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
         (*best_arr)[index] = MIN((*best_arr)[indexAbove], (*best_arr)[indexAbove -1]) + temp;
     }
 
-    /* Old ode
+    /* Old code
 
     for(int i = 1; i < height; i++){
         *temp = get_pixel(grad, i, 0, 0);
@@ -357,12 +357,55 @@ void recover_path(double *best, int height, int width, int **path){ //I think th
     *path = malloc(sizeof(int) * height);
     double temp = 256;
     int temp_width = 0;
-    for(int i = 0; i < width; i++){
+    //printf("INIT CASE: temp_width = %d \n", temp_width);
+    for(int i = 0; i < width; i++){ //finds minimum value for the first one, and sets that array.
         if(best[i] < temp) {
             temp_width = i;
             temp = best[i];
         }
     }
+    (*path)[0] = temp_width;
+    printf("AFTER LOOP: temp_width = %d %d \n", temp_width, (*path)[0]);
+
+    for(int y = 1; y < height; y++){
+
+        printf("y: %d  ", y);
+        double a = best[y*width + temp_width -1];
+        double b = best[y*width + temp_width];
+        double c = best[y*width + temp_width +1];
+        if(temp_width == 0){
+            //printf("width== 0");
+            if(c<b) temp_width++;
+        } else if(temp_width == width){
+            //printf("width== width");
+            if(a<b) temp_width--;
+        } else {
+            //printf("else    ");
+            switch (min_compare_three(a, b, c)) {
+                case 1:
+                    temp_width--;
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    temp_width++;
+                    break;
+                default:
+                    printf("Idk how you managed to break this, but good job...");
+                    break;
+            }
+        }
+        (*path)[y] = temp_width;
+        printf("temp_width: %d path value: %d y value: %d \n", temp_width, (*path)[y], y);
+    }
+}
+
+
+
+
+
+
+    /*OLD CODE
     for(int i = 1; i < height; i++){
         double a = best[i*width + temp_width - 1];
         double b = best[i*width + temp_width];
@@ -382,9 +425,10 @@ void recover_path(double *best, int height, int width, int **path){ //I think th
             default:
                 printf("Something is broken here... idk how this happened...");
         }
-        *path[i] = temp_width;
+        (*path)[i] = temp_width;
+        printf("%d ", (*path)[i]);
     }
-}
+}*/
 
 
 void old_recover_path(double *best, int height, int width, int **path){
@@ -449,6 +493,9 @@ int main() {
     double *best_arr;
 
     dynamic_seam(grad, &best_arr);
+
+    int *path;
+    recover_path(best_arr, (int)p_im->height,(int)p_im->width, &path);
 
     return 0;
     // End of Test Infrastructure - REMOVE WHEN SUBMITTING
