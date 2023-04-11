@@ -495,7 +495,7 @@ void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
 
 
 
-int main() {
+//int main() {
 
     /*
     struct rgb_img *im;
@@ -525,9 +525,9 @@ int main() {
         im = cur_im;
     }
     destroy_image(im); */
-    printf("Hello World");
+    //printf("Hello World");
 
-    return 0;
+    //return 0;
 
 
     /* OLD TESTING CODE
@@ -555,7 +555,7 @@ int main() {
     return 0; */
     // End of Test Infrastructure - REMOVE WHEN SUBMITTING
     //Infruastructire?? Say that 3 times fast and you'll summon Raymond from his office in GB
-}
+//}
 
 //
 // Created by Nicholas on 2023-03-22.
