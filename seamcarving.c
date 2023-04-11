@@ -130,10 +130,10 @@ void calc_energy(struct rgb_img *im, struct rgb_img **grad) {
             // Storing in image
 
             //TEST PRINT STATEMENT - REMOVE WHEN SUBMITTING
-            printf("%d\t", dual_gradient);
+            //printf("%d\t", dual_gradient);
         }
         //TEST PRINT STATEMENT - REMOVE WHEN SUBMITTING
-        printf("\n");
+        //printf("\n");
     }
 }
 
@@ -221,7 +221,7 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
     int width = grad->width;
     int height = grad->height;
 
-    printf("Width: %d Height: %d \n", width, height);
+    //printf("Width: %d Height: %d \n", width, height);
 
     *best_arr = (double *)malloc(sizeof(double) * (width * height));
 
@@ -285,12 +285,12 @@ void dynamic_seam(struct rgb_img *grad, double **best_arr){
 
     //test code to print best arr
 
-    for(int y = 0; y < height; y++){
-        for(int j = 0; j < width; j++){
-            printf("%f ", (*best_arr)[y*width+j]);
-        }
-        printf("\n");
-    }
+    //for(int y = 0; y < height; y++){
+    //    for(int j = 0; j < width; j++){
+    //        printf("%f ", (*best_arr)[y*width+j]);
+    //    }
+    //    printf("\n");
+    //}
 
     /*
     for(int i = 0; i < height; i++){
@@ -365,11 +365,11 @@ void recover_path(double *best, int height, int width, int **path){ //I think th
         }
     }
     (*path)[0] = temp_width;
-    printf("AFTER LOOP: temp_width = %d %d \n", temp_width, (*path)[0]);
+    //printf("AFTER LOOP: temp_width = %d %d \n", temp_width, (*path)[0]);
 
     for(int y = 1; y < height; y++){
 
-        printf("y: %d  ", y);
+        //printf("y: %d  ", y);
         double a = best[y*width + temp_width -1];
         double b = best[y*width + temp_width];
         double c = best[y*width + temp_width +1];
@@ -396,7 +396,7 @@ void recover_path(double *best, int height, int width, int **path){ //I think th
             }
         }
         (*path)[y] = temp_width;
-        printf("temp_width: %d path value: %d y value: %d \n", temp_width, (*path)[y], y);
+        //printf("temp_width: %d path value: %d y value: %d \n", temp_width, (*path)[y], y);
     }
 }
 
