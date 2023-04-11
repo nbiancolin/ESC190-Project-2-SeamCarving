@@ -460,22 +460,77 @@ void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
     int width = src->width;
     int height = src->height;
 
+    //The function creates the destination image, and writes to it the source image, with the seam removed
+
+    /**
+     * steps needed to remove from image
+     *
+     * create dest image (with (width-1))
+     * go row by row
+     * For each row, if width index != path thingy, then copy image over
+     * if width index == path thingy, then add 1 to the counter
+     */
+
     create_img(dest, height, width);
-
-
-    for(int i = 0; i < width; i++){
-        for(int j = 0; j < height; j++){
-            //Do something here
+    int x = 0;
+    for(int y = 0; y < height; y++){
+        x = 0;
+        while(x<path[y]) {
+            int r = get_pixel(src, y, x,0);
+            int g = get_pixel(src, y, x,1);
+            int b = get_pixel(src, y, x,2);
+            set_pixel(*dest, y, x,r,g,b);
+            x++;
+        }
+        //x++;
+        while(x < (width-1)){
+            int r = get_pixel(src, y, x+1,0);
+            int g = get_pixel(src, y, x+1,1);
+            int b = get_pixel(src, y, x+1,2);
+            set_pixel(*dest, y, x,r,g,b);
+            x++;
         }
     }
-
-
 }
 
 
 
 int main() {
 
+    /*
+    struct rgb_img *im;
+    struct rgb_img *cur_im;
+    struct rgb_img *grad;
+    double *best;
+    int *path;
+
+    read_in_img(&im, "../HJoceanSmall.bin");
+
+    for(int i = 0; i < 5; i++){
+        printf("i = %d\n", i);
+        calc_energy(im,  &grad);
+        dynamic_seam(grad, &best);
+        recover_path(best, grad->height, grad->width, &path);
+        remove_seam(im, &cur_im, path);
+
+        char filename[200];
+        sprintf(filename, "img%d.bin", i);
+        write_img(cur_im, filename);
+
+
+        destroy_image(im);
+        destroy_image(grad);
+        free(best);
+        free(path);
+        im = cur_im;
+    }
+    destroy_image(im); */
+    printf("Hello World");
+
+    return 0;
+
+
+    /* OLD TESTING CODE
     struct rgb_img *grad;
     struct rgb_img im;
     struct rgb_img *p_im = &im;
@@ -497,7 +552,7 @@ int main() {
     int *path;
     recover_path(best_arr, (int)p_im->height,(int)p_im->width, &path);
 
-    return 0;
+    return 0; */
     // End of Test Infrastructure - REMOVE WHEN SUBMITTING
     //Infruastructire?? Say that 3 times fast and you'll summon Raymond from his office in GB
 }
