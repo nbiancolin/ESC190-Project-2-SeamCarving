@@ -1,4 +1,5 @@
 from PIL import Image
+import sys
 
 def write_image(image, filename):
     height = image.height
@@ -36,19 +37,37 @@ def read_image(filename):
     return image
 
 if __name__ == '__main__':
-    #Write a png image to bin
-    image = Image.open("6x5.png")
-    write_image(image, "6x5.bin")
-    image = Image.open("3x4.png")
-    write_image(image, "3x4.bin")
 
-    #Read image from a bin file, save it to png
-    im2 = read_image("a.bin")
-    im3 = read_image("6x5_grad.bin")
-    im3.save("grad.png")
+    if(sys.argv[0] == "-b"):
+        #binary mode - bin -> png
+        if(sys.argv[1] == 's'):
+            fileName = sys.argv[2]
+            image = read_image(fileName + ".bin")
+            fileName += ".png"
+            image.save(fileName)
+        elif(sys.argv[1] == 'm'):
+            for i in range(sys.argv[3]):
+                fileName = sys.argv[1]
+                image = read_image(fileName + i + ".bin")
+                fileName += i
+                fileName += ".png"
+                image.save(fileName)
+    else: 
+        #image mode - png -> bin
+        if(sys.argv[0] == 's'): #single file mode
+            fileName = sys.argv[1]
+            image = Image.open(fileName + ".png")
+            fileName += ".bin"
+            write_image(image, fileName)
+
+        elif(sys.argv[0] == 'm'): #multiple file mode
+            for i in range(sys.argv[2]):
+                fileName = sys.argv[1]
+                image = Image.open(fileName + i + ".png")
+                fileName += i
+                fileName += ".bin"
+                write_image(image, fileName)
+        else:
+            print("ERROR: incorrect arguments passed")
 
 
-    # Write multiple images from bin to png
-    for i in range(200):
-        image = read_image("img%d.bin" % i)
-        image.save("img%d.png" % i)

@@ -227,6 +227,65 @@ void remove_seam(struct rgb_img *src, struct rgb_img **dest, int *path){
     }
 }
 
+int main(int argc, char *argv[]){
+    //arguments: filename, how many times you want it to rum
+    if(argc != 1 || argc != 2) {
+        printf("Error: invalid arguments");
+        return -1;
+    }
+
+    struct rgb_img *im;
+    struct rgb_img *cur_im;
+    struct rgb_img *grad;
+    double *best;
+    int *path;
+
+    read_in_img(&im, argv[0]);
+
+    if(argc == 1) {
+        //only run once
+        calc_energy(im, &grad);
+        dynamic_seam(grad, &best);
+        recover_path(best, grad->height, grad->width, &path);
+        remove_seam(im, &cur_im, path);
+
+        char filename[200];
+        sprintf(filename, "img.bin");
+        write_img(cur_im, filename);
+
+        destroy_image(im);
+        destroy_image(grad);
+        free(best);
+        free(path);
+
+    } else {
+        for(int i = 0; i < atoi(argv[1]); ++i){
+            printf("i = %d\n", i);
+            calc_energy(im, &grad);
+            dynamic_seam(grad, &best);
+            recover_path(best, grad->height, grad->width, &path);
+            remove_seam(im, &cur_im, path);
+
+            char filename[256];
+            sprintf(filename, "img%d.bin", i);
+            write_img(cur_im, filename);
+
+
+            destroy_image(im);
+            destroy_image(grad);
+            free(best);
+            free(path);
+            im = cur_im;
+        }
+        destroy_image(im);
+        printf("Hello World");
+
+        return 0;
+    }
+}
+
+
+
 
 /*
 int main() {
